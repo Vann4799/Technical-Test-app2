@@ -1,0 +1,10 @@
+.dotnet/
+dotnet-install.ps1
+
+**/bin/
+**/obj/
+*.user
+
+.vs/
+.vscode/
+.idea/
