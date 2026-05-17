@@ -165,10 +165,7 @@ Public Class MainForm
         left.Controls.Add(searchPanel, 0, 0)
         left.Controls.Add(gridMahasiswa, 0, 1)
 
-        Dim formPanel = CardPanel()
-        formPanel.Dock = DockStyle.Fill
-        formPanel.AutoScroll = True
-        formPanel.Padding = New Padding(24, 22, 24, 22)
+        Dim formPanel = FormStackPanel()
         formPanel.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Mahasiswa"))
         txtNama = InputBox("Nama")
@@ -192,6 +189,7 @@ Public Class MainForm
         formPanel.Controls.Add(LabeledControl("Fakultas", txtMahasiswaFakultas))
         formPanel.Controls.Add(LabeledControl("Jenjang", txtMahasiswaJenjang))
         formPanel.Controls.Add(MahasiswaButtons())
+        ResizeFormStack(formPanel)
 
         layout.Controls.Add(left, 0, 0)
         layout.Controls.Add(formPanel, 1, 0)
@@ -256,10 +254,7 @@ Public Class MainForm
         left.Controls.Add(searchPanel, 0, 0)
         left.Controls.Add(gridJurusan, 0, 1)
 
-        Dim formPanel = CardPanel()
-        formPanel.Dock = DockStyle.Fill
-        formPanel.AutoScroll = True
-        formPanel.Padding = New Padding(24, 22, 24, 22)
+        Dim formPanel = FormStackPanel()
         formPanel.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Jurusan"))
         txtNamaJurusan = InputBox("Nama Jurusan")
@@ -269,6 +264,7 @@ Public Class MainForm
         formPanel.Controls.Add(LabeledControl("Fakultas", txtFakultas))
         formPanel.Controls.Add(LabeledControl("Jenjang", txtJenjang))
         formPanel.Controls.Add(JurusanButtons())
+        ResizeFormStack(formPanel)
 
         layout.Controls.Add(left, 0, 0)
         layout.Controls.Add(formPanel, 1, 0)
@@ -612,6 +608,26 @@ Public Class MainForm
     Private Shared Function ButtonPanel() As FlowLayoutPanel
         Return New FlowLayoutPanel With {.Dock = DockStyle.Top, .AutoSize = True, .Padding = New Padding(0, 12, 0, 0), .BackColor = Surface}
     End Function
+
+    Private Shared Function FormStackPanel() As FlowLayoutPanel
+        Dim panel = New FlowLayoutPanel With {
+            .Dock = DockStyle.Fill,
+            .AutoScroll = True,
+            .FlowDirection = FlowDirection.TopDown,
+            .WrapContents = False,
+            .Padding = New Padding(24, 22, 18, 22),
+            .BackColor = Surface
+        }
+        AddHandler panel.Resize, Sub(sender, e) ResizeFormStack(DirectCast(sender, FlowLayoutPanel))
+        Return panel
+    End Function
+
+    Private Shared Sub ResizeFormStack(panel As FlowLayoutPanel)
+        Dim availableWidth = Math.Max(260, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth)
+        For Each child As Control In panel.Controls
+            child.Width = availableWidth
+        Next
+    End Sub
 
     Private Shared Function CardPanel() As TableLayoutPanel
         Return New TableLayoutPanel With {
