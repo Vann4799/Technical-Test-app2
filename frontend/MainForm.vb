@@ -174,9 +174,9 @@ Public Class MainForm
         txtNama = InputBox("Nama")
         txtUmur = InputBox("Umur")
         txtNim = InputBox("NIM")
-        dtpTanggalLahir = New DateTimePicker With {.Dock = DockStyle.Top, .Height = 38, .Format = DateTimePickerFormat.Custom, .CustomFormat = "yyyy-MM-dd", .Font = UiFont(10), .CalendarForeColor = TextStrong}
+        dtpTanggalLahir = New DateTimePicker With {.Dock = DockStyle.Fill, .Height = 34, .Format = DateTimePickerFormat.Custom, .CustomFormat = "yyyy-MM-dd", .Font = UiFont(10), .CalendarForeColor = TextStrong}
         txtAlamat = InputBox("Alamat")
-        cmbMahasiswaJurusan = New ComboBox With {.Dock = DockStyle.Top, .DropDownStyle = ComboBoxStyle.DropDownList, .Height = 38, .FlatStyle = FlatStyle.Flat, .Font = UiFont(10), .BackColor = Surface, .ForeColor = TextStrong}
+        cmbMahasiswaJurusan = New ComboBox With {.Dock = DockStyle.Fill, .DropDownStyle = ComboBoxStyle.DropDownList, .Height = 34, .FlatStyle = FlatStyle.Flat, .Font = UiFont(10), .BackColor = Surface, .ForeColor = TextStrong}
         txtMahasiswaFakultas = InputBox("Fakultas")
         txtMahasiswaFakultas.ReadOnly = True
         txtMahasiswaJenjang = InputBox("Jenjang")
@@ -608,17 +608,16 @@ Public Class MainForm
     End Function
 
     Private Shared Function HeaderLabel(text As String) As Label
-        Return New Label With {.Text = text, .Dock = DockStyle.Top, .Height = 48, .Font = UiFont(16, FontStyle.Bold), .ForeColor = TextStrong}
+        Return New Label With {.Text = text, .Height = 44, .Font = UiFont(16, FontStyle.Bold), .ForeColor = TextStrong, .TextAlign = ContentAlignment.MiddleLeft, .Margin = New Padding(0, 0, 0, 8)}
     End Function
 
     Private Shared Function LabeledControl(labelText As String, control As Control) As Control
-        Dim panel = New TableLayoutPanel With {.Dock = DockStyle.Top, .AutoSize = True, .ColumnCount = 1, .Padding = New Padding(0, 0, 0, 12), .BackColor = Surface}
-        panel.Controls.Add(New Label With {.Text = labelText, .Dock = DockStyle.Top, .Height = 24, .ForeColor = TextMuted, .Font = UiFont(9.5F, FontStyle.Bold)})
-        If TypeOf control Is TextBox Then
-            panel.Controls.Add(InputShell(control))
-        Else
-            panel.Controls.Add(control)
-        End If
+        Dim panel = New Panel With {.Height = 84, .BackColor = Surface, .Margin = New Padding(0, 0, 0, 10)}
+        Dim label = New Label With {.Text = labelText, .Dock = DockStyle.Top, .Height = 24, .ForeColor = TextMuted, .Font = UiFont(9.5F, FontStyle.Bold), .TextAlign = ContentAlignment.MiddleLeft}
+        Dim shell = InputShell(control)
+        shell.Dock = DockStyle.Top
+        panel.Controls.Add(shell)
+        panel.Controls.Add(label)
         Return panel
     End Function
 
@@ -653,7 +652,7 @@ Public Class MainForm
             .AutoScroll = True,
             .FlowDirection = FlowDirection.TopDown,
             .WrapContents = False,
-            .Padding = New Padding(24, 22, 18, 18),
+            .Padding = New Padding(24, 22, 24, 18),
             .BackColor = Surface
         }
         AddHandler panel.Resize, Sub(sender, e) ResizeFormStack(DirectCast(sender, FlowLayoutPanel))
@@ -661,7 +660,7 @@ Public Class MainForm
     End Function
 
     Private Shared Sub ResizeFormStack(panel As FlowLayoutPanel)
-        Dim availableWidth = Math.Max(260, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth - 4)
+        Dim availableWidth = Math.Max(300, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth - 6)
         For Each child As Control In panel.Controls
             child.Width = availableWidth
         Next
@@ -712,6 +711,10 @@ Public Class MainForm
         control.Dock = DockStyle.None
         control.Margin = New Padding(0)
         control.BackColor = Surface
+        If Not TypeOf control Is TextBox Then
+            control.Font = UiFont(10)
+            control.Height = 34
+        End If
 
         Dim shell = New Panel With {
             .Dock = DockStyle.Top,
