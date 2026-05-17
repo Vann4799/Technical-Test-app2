@@ -33,6 +33,7 @@ Public Class MainForm
     Private txtMahasiswaFakultas As TextBox
     Private txtMahasiswaJenjang As TextBox
     Private currentMahasiswaId As Long?
+    Private isResettingMahasiswaForm As Boolean
 
     Private txtJurusanSearch As TextBox
     Private gridJurusan As DataGridView
@@ -40,6 +41,7 @@ Public Class MainForm
     Private txtFakultas As TextBox
     Private txtJenjang As TextBox
     Private currentJurusanId As Long?
+    Private isResettingJurusanForm As Boolean
 
     Public Sub New()
         InitializeUi()
@@ -491,6 +493,8 @@ Public Class MainForm
     End Function
 
     Private Sub MahasiswaSelectionChanged(sender As Object, e As EventArgs)
+        If isResettingMahasiswaForm Then Return
+
         Dim item = TryCast(CurrentGridItem(gridMahasiswa), MahasiswaModel)
         If item Is Nothing Then Return
 
@@ -508,6 +512,8 @@ Public Class MainForm
     End Sub
 
     Private Sub JurusanSelectionChanged(sender As Object, e As EventArgs)
+        If isResettingJurusanForm Then Return
+
         Dim item = TryCast(CurrentGridItem(gridJurusan), JurusanModel)
         If item Is Nothing Then Return
 
@@ -530,23 +536,34 @@ Public Class MainForm
     End Sub
 
     Private Sub ResetMahasiswaForm()
-        currentMahasiswaId = Nothing
-        txtNim.Clear()
-        txtNama.Clear()
-        txtUmur.Clear()
-        dtpTanggalLahir.Value = Date.Today
-        txtAlamat.Clear()
-        If cmbMahasiswaJurusan.Items.Count > 0 Then cmbMahasiswaJurusan.SelectedIndex = 0
-        MahasiswaJurusanChanged(cmbMahasiswaJurusan, EventArgs.Empty)
-        gridMahasiswa.ClearSelection()
+        Try
+            isResettingMahasiswaForm = True
+            currentMahasiswaId = Nothing
+            gridMahasiswa.ClearSelection()
+            txtNim.Clear()
+            txtNama.Clear()
+            txtUmur.Clear()
+            dtpTanggalLahir.Value = Date.Today
+            txtAlamat.Clear()
+            cmbMahasiswaJurusan.SelectedIndex = -1
+            txtMahasiswaFakultas.Clear()
+            txtMahasiswaJenjang.Clear()
+        Finally
+            isResettingMahasiswaForm = False
+        End Try
     End Sub
 
     Private Sub ResetJurusanForm()
-        currentJurusanId = Nothing
-        txtNamaJurusan.Clear()
-        txtFakultas.Clear()
-        txtJenjang.Clear()
-        gridJurusan.ClearSelection()
+        Try
+            isResettingJurusanForm = True
+            currentJurusanId = Nothing
+            gridJurusan.ClearSelection()
+            txtNamaJurusan.Clear()
+            txtFakultas.Clear()
+            txtJenjang.Clear()
+        Finally
+            isResettingJurusanForm = False
+        End Try
     End Sub
 
     Private Async Function RunSafelyAsync(action As Func(Of Task)) As Task
