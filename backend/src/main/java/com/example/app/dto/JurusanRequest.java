@@ -9,6 +9,9 @@ public record JurusanRequest(
         String namaJurusan,
 
         @Size(max = 100, message = "Fakultas maksimal 100 karakter")
-        String fakultas
+        String fakultas,
+
+        @Size(max = 50, message = "Jenjang maksimal 50 karakter")
+        String jenjang
 ) {
 }

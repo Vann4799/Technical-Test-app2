@@ -63,23 +63,27 @@ public class ExportService {
                         .map(item -> new String[] {
                                 text(item.getId()),
                                 item.getNamaJurusan(),
-                                item.getFakultas()
+                                item.getFakultas(),
+                                item.getJenjang()
                         })
                         .toList();
-                yield withHeader(new String[] {"ID", "Nama Jurusan", "Fakultas"}, rows);
+                yield withHeader(new String[] {"ID", "Nama Jurusan", "Fakultas", "Jenjang"}, rows);
             }
             case "mahasiswa" -> {
                 List<String[]> rows = mahasiswaRepository.findAll().stream()
                         .map(item -> new String[] {
                                 text(item.getId()),
-                                item.getNim(),
                                 item.getNama(),
-                                item.getEmail(),
+                                text(item.getUmur()),
+                                item.getNim(),
+                                text(item.getTanggalLahir()),
+                                item.getAlamat(),
                                 item.getJurusan() == null ? "" : item.getJurusan().getNamaJurusan(),
-                                item.getJurusan() == null ? "" : item.getJurusan().getFakultas()
+                                item.getJurusan() == null ? "" : item.getJurusan().getFakultas(),
+                                item.getJurusan() == null ? "" : item.getJurusan().getJenjang()
                         })
                         .toList();
-                yield withHeader(new String[] {"ID", "NIM", "Nama", "Email", "Jurusan", "Fakultas"}, rows);
+                yield withHeader(new String[] {"ID", "Nama", "Umur", "NIM", "Tanggal Lahir", "Alamat", "Jurusan", "Fakultas", "Jenjang"}, rows);
             }
             default -> throw new BadRequestException(Map.of("resource", "Resource export harus jurusan atau mahasiswa"));
         };

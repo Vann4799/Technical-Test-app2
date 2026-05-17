@@ -1,7 +1,6 @@
 Imports System.ComponentModel
 Imports System.Drawing
 Imports System.Drawing.Text
-Imports System.Text.RegularExpressions
 Imports System.Windows.Forms
 
 Public Class MainForm
@@ -27,14 +26,19 @@ Public Class MainForm
     Private gridMahasiswa As DataGridView
     Private txtNim As TextBox
     Private txtNama As TextBox
-    Private txtEmail As TextBox
+    Private txtUmur As TextBox
+    Private dtpTanggalLahir As DateTimePicker
+    Private txtAlamat As TextBox
     Private cmbMahasiswaJurusan As ComboBox
+    Private txtMahasiswaFakultas As TextBox
+    Private txtMahasiswaJenjang As TextBox
     Private currentMahasiswaId As Long?
 
     Private txtJurusanSearch As TextBox
     Private gridJurusan As DataGridView
     Private txtNamaJurusan As TextBox
     Private txtFakultas As TextBox
+    Private txtJenjang As TextBox
     Private currentJurusanId As Long?
 
     Public Sub New()
@@ -150,9 +154,11 @@ Public Class MainForm
 
         gridMahasiswa = New DataGridView With {.Dock = DockStyle.Fill, .AutoGenerateColumns = False, .ReadOnly = True, .SelectionMode = DataGridViewSelectionMode.FullRowSelect, .MultiSelect = False, .AllowUserToAddRows = False}
         gridMahasiswa.Columns.Add(TextColumn("NIM", "Nim", 110))
-        gridMahasiswa.Columns.Add(TextColumn("Nama", "Nama", 190))
-        gridMahasiswa.Columns.Add(TextColumn("Email", "Email", 210))
-        gridMahasiswa.Columns.Add(TextColumn("Jurusan", "NamaJurusan", 180))
+        gridMahasiswa.Columns.Add(TextColumn("Nama", "Nama", 170))
+        gridMahasiswa.Columns.Add(TextColumn("Umur", "Umur", 80))
+        gridMahasiswa.Columns.Add(TextColumn("Tanggal Lahir", "TanggalLahirDisplay", 130))
+        gridMahasiswa.Columns.Add(TextColumn("Alamat", "Alamat", 220))
+        gridMahasiswa.Columns.Add(TextColumn("Jurusan", "NamaJurusan", 170))
         StyleGrid(gridMahasiswa)
         AddHandler gridMahasiswa.SelectionChanged, AddressOf MahasiswaSelectionChanged
 
@@ -161,18 +167,30 @@ Public Class MainForm
 
         Dim formPanel = CardPanel()
         formPanel.Dock = DockStyle.Fill
+        formPanel.AutoScroll = True
         formPanel.Padding = New Padding(24, 22, 24, 22)
         formPanel.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Mahasiswa"))
-        txtNim = InputBox("NIM")
         txtNama = InputBox("Nama")
-        txtEmail = InputBox("Email")
+        txtUmur = InputBox("Umur")
+        txtNim = InputBox("NIM")
+        dtpTanggalLahir = New DateTimePicker With {.Dock = DockStyle.Top, .Height = 38, .Format = DateTimePickerFormat.Custom, .CustomFormat = "yyyy-MM-dd", .Font = UiFont(10), .CalendarForeColor = TextStrong}
+        txtAlamat = InputBox("Alamat")
         cmbMahasiswaJurusan = New ComboBox With {.Dock = DockStyle.Top, .DropDownStyle = ComboBoxStyle.DropDownList, .Height = 38, .FlatStyle = FlatStyle.Flat, .Font = UiFont(10), .BackColor = Surface, .ForeColor = TextStrong}
+        txtMahasiswaFakultas = InputBox("Fakultas")
+        txtMahasiswaFakultas.ReadOnly = True
+        txtMahasiswaJenjang = InputBox("Jenjang")
+        txtMahasiswaJenjang.ReadOnly = True
+        AddHandler cmbMahasiswaJurusan.SelectedIndexChanged, AddressOf MahasiswaJurusanChanged
 
-        formPanel.Controls.Add(LabeledControl("NIM", txtNim))
         formPanel.Controls.Add(LabeledControl("Nama", txtNama))
-        formPanel.Controls.Add(LabeledControl("Email", txtEmail))
+        formPanel.Controls.Add(LabeledControl("Umur", txtUmur))
+        formPanel.Controls.Add(LabeledControl("NIM", txtNim))
+        formPanel.Controls.Add(LabeledControl("Tanggal Lahir", dtpTanggalLahir))
+        formPanel.Controls.Add(LabeledControl("Alamat", txtAlamat))
         formPanel.Controls.Add(LabeledControl("Jurusan", cmbMahasiswaJurusan))
+        formPanel.Controls.Add(LabeledControl("Fakultas", txtMahasiswaFakultas))
+        formPanel.Controls.Add(LabeledControl("Jenjang", txtMahasiswaJenjang))
         formPanel.Controls.Add(MahasiswaButtons())
 
         layout.Controls.Add(left, 0, 0)
@@ -230,7 +248,8 @@ Public Class MainForm
         gridJurusan = New DataGridView With {.Dock = DockStyle.Fill, .AutoGenerateColumns = False, .ReadOnly = True, .SelectionMode = DataGridViewSelectionMode.FullRowSelect, .MultiSelect = False, .AllowUserToAddRows = False}
         gridJurusan.Columns.Add(TextColumn("ID", "Id", 80))
         gridJurusan.Columns.Add(TextColumn("Nama Jurusan", "NamaJurusan", 240))
-        gridJurusan.Columns.Add(TextColumn("Fakultas", "Fakultas", 260))
+        gridJurusan.Columns.Add(TextColumn("Fakultas", "Fakultas", 220))
+        gridJurusan.Columns.Add(TextColumn("Jenjang", "Jenjang", 140))
         StyleGrid(gridJurusan)
         AddHandler gridJurusan.SelectionChanged, AddressOf JurusanSelectionChanged
 
@@ -239,13 +258,16 @@ Public Class MainForm
 
         Dim formPanel = CardPanel()
         formPanel.Dock = DockStyle.Fill
+        formPanel.AutoScroll = True
         formPanel.Padding = New Padding(24, 22, 24, 22)
         formPanel.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Jurusan"))
         txtNamaJurusan = InputBox("Nama Jurusan")
         txtFakultas = InputBox("Fakultas")
+        txtJenjang = InputBox("Jenjang")
         formPanel.Controls.Add(LabeledControl("Nama Jurusan", txtNamaJurusan))
         formPanel.Controls.Add(LabeledControl("Fakultas", txtFakultas))
+        formPanel.Controls.Add(LabeledControl("Jenjang", txtJenjang))
         formPanel.Controls.Add(JurusanButtons())
 
         layout.Controls.Add(left, 0, 0)
@@ -309,13 +331,13 @@ Public Class MainForm
     End Function
 
     Private Async Function SaveJurusanAsync() As Task
-        If String.IsNullOrWhiteSpace(txtNamaJurusan.Text) Then
-            MessageBox.Show("Nama jurusan wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        If String.IsNullOrWhiteSpace(txtNamaJurusan.Text) OrElse String.IsNullOrWhiteSpace(txtFakultas.Text) OrElse String.IsNullOrWhiteSpace(txtJenjang.Text) Then
+            MessageBox.Show("Nama jurusan, fakultas, dan jenjang wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         Await RunSafelyAsync(Async Function()
-                                 Await Service().CreateJurusanAsync(New JurusanRequest With {.NamaJurusan = txtNamaJurusan.Text.Trim(), .Fakultas = txtFakultas.Text.Trim()})
+                                 Await Service().CreateJurusanAsync(New JurusanRequest With {.NamaJurusan = txtNamaJurusan.Text.Trim(), .Fakultas = txtFakultas.Text.Trim(), .Jenjang = txtJenjang.Text.Trim()})
                                  ResetJurusanForm()
                                  Await LoadJurusanAsync()
                              End Function)
@@ -328,7 +350,7 @@ Public Class MainForm
         End If
 
         Await RunSafelyAsync(Async Function()
-                                 Await Service().UpdateJurusanAsync(currentJurusanId.Value, New JurusanRequest With {.NamaJurusan = txtNamaJurusan.Text.Trim(), .Fakultas = txtFakultas.Text.Trim()})
+                                 Await Service().UpdateJurusanAsync(currentJurusanId.Value, New JurusanRequest With {.NamaJurusan = txtNamaJurusan.Text.Trim(), .Fakultas = txtFakultas.Text.Trim(), .Jenjang = txtJenjang.Text.Trim()})
                                  ResetJurusanForm()
                                  Await LoadJurusanAsync()
                              End Function)
@@ -446,8 +468,14 @@ Public Class MainForm
     End Function
 
     Private Function BuildMahasiswaRequest() As MahasiswaRequest
-        If String.IsNullOrWhiteSpace(txtNim.Text) OrElse String.IsNullOrWhiteSpace(txtNama.Text) Then
-            MessageBox.Show("NIM dan nama wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        If String.IsNullOrWhiteSpace(txtNama.Text) OrElse String.IsNullOrWhiteSpace(txtUmur.Text) OrElse String.IsNullOrWhiteSpace(txtNim.Text) OrElse String.IsNullOrWhiteSpace(txtAlamat.Text) Then
+            MessageBox.Show("Nama, umur, NIM, dan alamat wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return Nothing
+        End If
+
+        Dim umur As Integer
+        If Not Integer.TryParse(txtUmur.Text.Trim(), umur) OrElse umur <= 0 Then
+            MessageBox.Show("Umur harus berupa angka lebih dari 0.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return Nothing
         End If
 
@@ -456,15 +484,12 @@ Public Class MainForm
             Return Nothing
         End If
 
-        If Not String.IsNullOrWhiteSpace(txtEmail.Text) AndAlso Not Regex.IsMatch(txtEmail.Text.Trim(), "^[^@\s]+@[^@\s]+\.[^@\s]+$") Then
-            MessageBox.Show("Format email tidak valid.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return Nothing
-        End If
-
         Return New MahasiswaRequest With {
             .Nim = txtNim.Text.Trim(),
             .Nama = txtNama.Text.Trim(),
-            .Email = txtEmail.Text.Trim(),
+            .Umur = umur,
+            .TanggalLahir = dtpTanggalLahir.Value.ToString("yyyy-MM-dd"),
+            .Alamat = txtAlamat.Text.Trim(),
             .JurusanId = Convert.ToInt64(cmbMahasiswaJurusan.SelectedValue)
         }
     End Function
@@ -476,7 +501,11 @@ Public Class MainForm
         currentMahasiswaId = item.Id
         txtNim.Text = item.Nim
         txtNama.Text = item.Nama
-        txtEmail.Text = item.Email
+        txtUmur.Text = item.Umur.ToString()
+        If item.TanggalLahir.HasValue Then
+            dtpTanggalLahir.Value = item.TanggalLahir.Value
+        End If
+        txtAlamat.Text = item.Alamat
         If item.Jurusan IsNot Nothing Then
             cmbMahasiswaJurusan.SelectedValue = item.Jurusan.Id
         End If
@@ -489,14 +518,30 @@ Public Class MainForm
         currentJurusanId = item.Id
         txtNamaJurusan.Text = item.NamaJurusan
         txtFakultas.Text = item.Fakultas
+        txtJenjang.Text = item.Jenjang
+    End Sub
+
+    Private Sub MahasiswaJurusanChanged(sender As Object, e As EventArgs)
+        Dim selectedJurusan = TryCast(cmbMahasiswaJurusan.SelectedItem, JurusanModel)
+        If selectedJurusan Is Nothing Then
+            txtMahasiswaFakultas.Clear()
+            txtMahasiswaJenjang.Clear()
+            Return
+        End If
+
+        txtMahasiswaFakultas.Text = selectedJurusan.Fakultas
+        txtMahasiswaJenjang.Text = selectedJurusan.Jenjang
     End Sub
 
     Private Sub ResetMahasiswaForm()
         currentMahasiswaId = Nothing
         txtNim.Clear()
         txtNama.Clear()
-        txtEmail.Clear()
+        txtUmur.Clear()
+        dtpTanggalLahir.Value = Date.Today
+        txtAlamat.Clear()
         If cmbMahasiswaJurusan.Items.Count > 0 Then cmbMahasiswaJurusan.SelectedIndex = 0
+        MahasiswaJurusanChanged(cmbMahasiswaJurusan, EventArgs.Empty)
         gridMahasiswa.ClearSelection()
     End Sub
 
@@ -504,6 +549,7 @@ Public Class MainForm
         currentJurusanId = Nothing
         txtNamaJurusan.Clear()
         txtFakultas.Clear()
+        txtJenjang.Clear()
         gridJurusan.ClearSelection()
     End Sub
 
@@ -553,8 +599,8 @@ Public Class MainForm
     End Function
 
     Private Shared Function LabeledControl(labelText As String, control As Control) As Control
-        Dim panel = New TableLayoutPanel With {.Dock = DockStyle.Top, .AutoSize = True, .ColumnCount = 1, .Padding = New Padding(0, 0, 0, 16), .BackColor = Surface}
-        panel.Controls.Add(New Label With {.Text = labelText, .Dock = DockStyle.Top, .Height = 26, .ForeColor = TextMuted, .Font = UiFont(9.5F, FontStyle.Bold)})
+        Dim panel = New TableLayoutPanel With {.Dock = DockStyle.Top, .AutoSize = True, .ColumnCount = 1, .Padding = New Padding(0, 0, 0, 12), .BackColor = Surface}
+        panel.Controls.Add(New Label With {.Text = labelText, .Dock = DockStyle.Top, .Height = 24, .ForeColor = TextMuted, .Font = UiFont(9.5F, FontStyle.Bold)})
         If TypeOf control Is TextBox Then
             panel.Controls.Add(InputShell(control))
         Else

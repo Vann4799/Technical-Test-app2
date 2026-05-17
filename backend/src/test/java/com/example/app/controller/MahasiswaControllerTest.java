@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -63,7 +65,9 @@ class MahasiswaControllerTest {
                                 {
                                   "nim": "2026001",
                                   "nama": "Ivan Pratama",
-                                  "email": "ivan@example.com",
+                                  "umur": 21,
+                                  "tanggalLahir": "2005-01-15",
+                                  "alamat": "Jl. Merdeka 1",
                                   "jurusanId": %d
                                 }
                                 """.formatted(jurusan.getId())))
@@ -72,7 +76,9 @@ class MahasiswaControllerTest {
                 .andExpect(jsonPath("$.data.id", notNullValue()))
                 .andExpect(jsonPath("$.data.nim").value("2026001"))
                 .andExpect(jsonPath("$.data.nama").value("Ivan Pratama"))
-                .andExpect(jsonPath("$.data.email").value("ivan@example.com"))
+                .andExpect(jsonPath("$.data.umur").value(21))
+                .andExpect(jsonPath("$.data.tanggalLahir").value("2005-01-15"))
+                .andExpect(jsonPath("$.data.alamat").value("Jl. Merdeka 1"))
                 .andExpect(jsonPath("$.data.jurusan.namaJurusan").value("Teknik Informatika"));
     }
 
@@ -86,7 +92,9 @@ class MahasiswaControllerTest {
                                 {
                                   "nim": "2026002",
                                   "nama": "",
-                                  "email": "student@example.com",
+                                  "umur": 20,
+                                  "tanggalLahir": "2006-02-20",
+                                  "alamat": "Jl. Melati 2",
                                   "jurusanId": %d
                                 }
                                 """.formatted(jurusan.getId())))
@@ -99,7 +107,7 @@ class MahasiswaControllerTest {
     @Test
     void createMahasiswaRejectsDuplicateNim() throws Exception {
         Jurusan jurusan = saveJurusan("Akuntansi");
-        createMahasiswa("2026003", "Budi", "budi@example.com", jurusan.getId());
+        createMahasiswa("2026003", "Budi", jurusan.getId());
 
         mockMvc.perform(post("/api/mahasiswa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +115,9 @@ class MahasiswaControllerTest {
                                 {
                                   "nim": "2026003",
                                   "nama": "Budi Santoso",
-                                  "email": "budi2@example.com",
+                                  "umur": 22,
+                                  "tanggalLahir": "2004-03-10",
+                                  "alamat": "Jl. Kenanga 3",
                                   "jurusanId": %d
                                 }
                                 """.formatted(jurusan.getId())))
@@ -118,7 +128,7 @@ class MahasiswaControllerTest {
     @Test
     void updateMahasiswaChangesExistingData() throws Exception {
         Jurusan jurusan = saveJurusan("Manajemen");
-        int id = createMahasiswa("2026004", "Sari", "sari@example.com", jurusan.getId());
+        int id = createMahasiswa("2026004", "Sari", jurusan.getId());
 
         mockMvc.perform(put("/api/mahasiswa/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,19 +136,22 @@ class MahasiswaControllerTest {
                                 {
                                   "nim": "2026004",
                                   "nama": "Sari Wulandari",
-                                  "email": "sari.w@example.com",
+                                  "umur": 23,
+                                  "tanggalLahir": "2003-04-12",
+                                  "alamat": "Jl. Mawar 4",
                                   "jurusanId": %d
                                 }
                                 """.formatted(jurusan.getId())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.nama").value("Sari Wulandari"))
-                .andExpect(jsonPath("$.data.email").value("sari.w@example.com"));
+                .andExpect(jsonPath("$.data.umur").value(23))
+                .andExpect(jsonPath("$.data.alamat").value("Jl. Mawar 4"));
     }
 
     @Test
     void deleteMahasiswaRemovesExistingData() throws Exception {
         Jurusan jurusan = saveJurusan("Desain Komunikasi Visual");
-        int id = createMahasiswa("2026005", "Dina", "dina@example.com", jurusan.getId());
+        int id = createMahasiswa("2026005", "Dina", jurusan.getId());
 
         mockMvc.perform(delete("/api/mahasiswa/{id}", id))
                 .andExpect(status().isOk())
@@ -152,8 +165,8 @@ class MahasiswaControllerTest {
     @Test
     void searchMahasiswaFiltersByNamaOrNim() throws Exception {
         Jurusan jurusan = saveJurusan("Teknik Informatika");
-        createMahasiswa("2026006", "Andi Saputra", "andi@example.com", jurusan.getId());
-        createMahasiswa("2026007", "Maya Putri", "maya@example.com", jurusan.getId());
+        createMahasiswa("2026006", "Andi Saputra", jurusan.getId());
+        createMahasiswa("2026007", "Maya Putri", jurusan.getId());
 
         mockMvc.perform(get("/api/mahasiswa").param("search", "maya"))
                 .andExpect(status().isOk())
@@ -169,20 +182,24 @@ class MahasiswaControllerTest {
     private Jurusan saveJurusan(String namaJurusan) {
         Jurusan jurusan = new Jurusan();
         jurusan.setNamaJurusan(namaJurusan);
+        jurusan.setFakultas("Fakultas " + namaJurusan);
+        jurusan.setJenjang("S1");
         return jurusanRepository.save(jurusan);
     }
 
-    private int createMahasiswa(String nim, String nama, String email, Long jurusanId) throws Exception {
+    private int createMahasiswa(String nim, String nama, Long jurusanId) throws Exception {
         String response = mockMvc.perform(post("/api/mahasiswa")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "nim": "%s",
                                   "nama": "%s",
-                                  "email": "%s",
+                                  "umur": 21,
+                                  "tanggalLahir": "2005-01-15",
+                                  "alamat": "Jl. Test",
                                   "jurusanId": %d
                                 }
-                                """.formatted(nim, nama, email, jurusanId)))
+                                """.formatted(nim, nama, jurusanId)))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()

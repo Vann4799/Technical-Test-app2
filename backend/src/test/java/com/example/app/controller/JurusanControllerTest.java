@@ -55,14 +55,16 @@ class JurusanControllerTest {
                         .content("""
                                 {
                                   "namaJurusan": "Teknik Informatika",
-                                  "fakultas": "Sains dan Teknologi"
+                                  "fakultas": "Sains dan Teknologi",
+                                  "jenjang": "S1"
                                 }
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id", notNullValue()))
                 .andExpect(jsonPath("$.data.namaJurusan").value("Teknik Informatika"))
-                .andExpect(jsonPath("$.data.fakultas").value("Sains dan Teknologi"));
+                .andExpect(jsonPath("$.data.fakultas").value("Sains dan Teknologi"))
+                .andExpect(jsonPath("$.data.jenjang").value("S1"));
 
         assertTrue(jurusanRepository.findAll().stream()
                 .anyMatch(jurusan -> jurusan.getNamaJurusan().equals("Teknik Informatika")));
@@ -108,14 +110,16 @@ class JurusanControllerTest {
                         .content("""
                                 {
                                   "namaJurusan": "Akuntansi",
-                                  "fakultas": "Ekonomi dan Bisnis"
+                                  "fakultas": "Ekonomi dan Bisnis",
+                                  "jenjang": "D3"
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(jurusan.getId()))
                 .andExpect(jsonPath("$.data.namaJurusan").value("Akuntansi"))
-                .andExpect(jsonPath("$.data.fakultas").value("Ekonomi dan Bisnis"));
+                .andExpect(jsonPath("$.data.fakultas").value("Ekonomi dan Bisnis"))
+                .andExpect(jsonPath("$.data.jenjang").value("D3"));
     }
 
     @Test

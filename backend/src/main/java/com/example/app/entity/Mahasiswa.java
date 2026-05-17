@@ -12,6 +12,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,8 +29,14 @@ public class Mahasiswa {
     @Column(nullable = false, length = 100)
     private String nama;
 
-    @Column(unique = true, length = 100)
-    private String email;
+    @Column(nullable = false)
+    private Integer umur;
+
+    @Column(name = "tanggal_lahir", nullable = false)
+    private LocalDate tanggalLahir;
+
+    @Column(nullable = false, length = 255)
+    private String alamat;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "jurusan_id", nullable = false)
@@ -61,12 +68,28 @@ public class Mahasiswa {
         this.nama = nama;
     }
 
-    public String getEmail() {
-        return email;
+    public Integer getUmur() {
+        return umur;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUmur(Integer umur) {
+        this.umur = umur;
+    }
+
+    public LocalDate getTanggalLahir() {
+        return tanggalLahir;
+    }
+
+    public void setTanggalLahir(LocalDate tanggalLahir) {
+        this.tanggalLahir = tanggalLahir;
+    }
+
+    public String getAlamat() {
+        return alamat;
+    }
+
+    public void setAlamat(String alamat) {
+        this.alamat = alamat;
     }
 
     public Jurusan getJurusan() {

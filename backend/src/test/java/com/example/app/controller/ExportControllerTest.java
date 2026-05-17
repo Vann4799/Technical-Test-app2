@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +41,7 @@ class ExportControllerTest {
 
     @Test
     void exportJurusanCsvReturnsDownloadableFile() throws Exception {
-        saveJurusan("Teknik Informatika", "Teknik");
+        saveJurusan("Teknik Informatika", "Teknik", "S1");
 
         byte[] response = mockMvc.perform(get("/api/export/jurusan/csv"))
                 .andExpect(status().isOk())
@@ -50,14 +51,14 @@ class ExportControllerTest {
                 .getContentAsByteArray();
 
         String csv = new String(response, StandardCharsets.UTF_8);
-        assertThat(csv).contains("ID,Nama Jurusan,Fakultas");
-        assertThat(csv).contains("Teknik Informatika,Teknik");
+        assertThat(csv).contains("ID,Nama Jurusan,Fakultas,Jenjang");
+        assertThat(csv).contains("Teknik Informatika,Teknik,S1");
     }
 
     @Test
     void exportMahasiswaJsonReturnsData() throws Exception {
-        Jurusan jurusan = saveJurusan("Sistem Informasi", "Ilmu Komputer");
-        saveMahasiswa("2026001", "Ayu", "ayu@example.com", jurusan);
+        Jurusan jurusan = saveJurusan("Sistem Informasi", "Ilmu Komputer", "S1");
+        saveMahasiswa("2026001", "Ayu", jurusan);
 
         byte[] response = mockMvc.perform(get("/api/export/mahasiswa/json"))
                 .andExpect(status().isOk())
@@ -73,7 +74,7 @@ class ExportControllerTest {
 
     @Test
     void exportExcelAndPdfFormatsAreSupported() throws Exception {
-        saveJurusan("Akuntansi", "Ekonomi");
+        saveJurusan("Akuntansi", "Ekonomi", "D3");
 
         mockMvc.perform(get("/api/export/jurusan/xlsx"))
                 .andExpect(status().isOk())
@@ -90,18 +91,21 @@ class ExportControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private Jurusan saveJurusan(String namaJurusan, String fakultas) {
+    private Jurusan saveJurusan(String namaJurusan, String fakultas, String jenjang) {
         Jurusan jurusan = new Jurusan();
         jurusan.setNamaJurusan(namaJurusan);
         jurusan.setFakultas(fakultas);
+        jurusan.setJenjang(jenjang);
         return jurusanRepository.save(jurusan);
     }
 
-    private void saveMahasiswa(String nim, String nama, String email, Jurusan jurusan) {
+    private void saveMahasiswa(String nim, String nama, Jurusan jurusan) {
         Mahasiswa mahasiswa = new Mahasiswa();
         mahasiswa.setNim(nim);
         mahasiswa.setNama(nama);
-        mahasiswa.setEmail(email);
+        mahasiswa.setUmur(21);
+        mahasiswa.setTanggalLahir(LocalDate.of(2005, 1, 15));
+        mahasiswa.setAlamat("Jl. Test");
         mahasiswa.setJurusan(jurusan);
         mahasiswaRepository.save(mahasiswa);
     }

@@ -72,8 +72,9 @@ http://localhost:8081
 
 ## Fitur
 
-- CRUD Jurusan dengan field Nama Jurusan dan Fakultas.
-- CRUD Mahasiswa dengan relasi ke Jurusan.
+- CRUD Jurusan dengan field Nama Jurusan, Fakultas, dan Jenjang.
+- CRUD Mahasiswa dengan field Nama, Umur, NIM, Tanggal Lahir, Alamat, dan relasi ke Jurusan.
+- Fakultas dan Jenjang tampil otomatis readonly di Form Mahasiswa berdasarkan Jurusan yang dipilih.
 - Search Jurusan dan Mahasiswa.
 - Validasi input di frontend dan backend.
 - Swagger/OpenAPI untuk dokumentasi REST API.

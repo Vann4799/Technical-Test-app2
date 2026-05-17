@@ -34,6 +34,11 @@ public class MahasiswaController {
         return ApiResponse.success("Data berhasil diproses", mahasiswaService.findAll(search));
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<Mahasiswa> findById(@PathVariable Long id) {
+        return ApiResponse.success("Data berhasil diproses", mahasiswaService.findOne(id));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<Mahasiswa>> create(@Valid @RequestBody MahasiswaRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)

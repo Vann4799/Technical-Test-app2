@@ -10,9 +10,5 @@ public interface MahasiswaRepository extends JpaRepository<Mahasiswa, Long> {
 
     boolean existsByNimIgnoreCaseAndIdNot(String nim, Long id);
 
-    boolean existsByEmailIgnoreCase(String email);
-
-    boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
-
     List<Mahasiswa> findByNamaContainingIgnoreCaseOrNimContainingIgnoreCase(String nama, String nim);
 }

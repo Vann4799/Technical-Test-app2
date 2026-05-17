@@ -33,6 +33,10 @@ public class MahasiswaService {
         return mahasiswaRepository.findByNamaContainingIgnoreCaseOrNimContainingIgnoreCase(keyword, keyword);
     }
 
+    public Mahasiswa findOne(Long id) {
+        return findById(id);
+    }
+
     @Transactional
     public Mahasiswa create(MahasiswaRequest request) {
         validateUniqueFields(request, null);
@@ -66,14 +70,15 @@ public class MahasiswaService {
 
         mahasiswa.setNim(request.nim().trim());
         mahasiswa.setNama(request.nama().trim());
-        mahasiswa.setEmail(normalizeEmail(request.email()));
+        mahasiswa.setUmur(request.umur());
+        mahasiswa.setTanggalLahir(request.tanggalLahir());
+        mahasiswa.setAlamat(request.alamat().trim());
         mahasiswa.setJurusan(jurusan);
     }
 
     private void validateUniqueFields(MahasiswaRequest request, Long currentId) {
         Map<String, String> errors = new LinkedHashMap<>();
         String nim = request.nim().trim();
-        String email = normalizeEmail(request.email());
 
         boolean nimExists = currentId == null
                 ? mahasiswaRepository.existsByNimIgnoreCase(nim)
@@ -82,24 +87,8 @@ public class MahasiswaService {
             errors.put("nim", "NIM already exists");
         }
 
-        if (email != null) {
-            boolean emailExists = currentId == null
-                    ? mahasiswaRepository.existsByEmailIgnoreCase(email)
-                    : mahasiswaRepository.existsByEmailIgnoreCaseAndIdNot(email, currentId);
-            if (emailExists) {
-                errors.put("email", "Email sudah digunakan");
-            }
-        }
-
         if (!errors.isEmpty()) {
             throw new BadRequestException(errors);
         }
-    }
-
-    private String normalizeEmail(String email) {
-        if (email == null || email.isBlank()) {
-            return null;
-        }
-        return email.trim().toLowerCase();
     }
 }

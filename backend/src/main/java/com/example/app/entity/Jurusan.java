@@ -25,6 +25,9 @@ public class Jurusan {
     @Column(length = 100)
     private String fakultas;
 
+    @Column(length = 50)
+    private String jenjang;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -49,6 +52,14 @@ public class Jurusan {
 
     public void setFakultas(String fakultas) {
         this.fakultas = fakultas;
+    }
+
+    public String getJenjang() {
+        return jenjang;
+    }
+
+    public void setJenjang(String jenjang) {
+        this.jenjang = jenjang;
     }
 
     public LocalDateTime getCreatedAt() {

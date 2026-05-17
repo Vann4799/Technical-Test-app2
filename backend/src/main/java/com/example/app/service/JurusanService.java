@@ -27,6 +27,10 @@ public class JurusanService {
         return jurusanRepository.findByNamaJurusanContainingIgnoreCase(search.trim());
     }
 
+    public Jurusan findOne(Long id) {
+        return findById(id);
+    }
+
     @Transactional
     public Jurusan create(JurusanRequest request) {
         ensureNameAvailable(request.namaJurusan(), null);
@@ -34,6 +38,7 @@ public class JurusanService {
         Jurusan jurusan = new Jurusan();
         jurusan.setNamaJurusan(request.namaJurusan().trim());
         jurusan.setFakultas(normalizeOptionalText(request.fakultas()));
+        jurusan.setJenjang(normalizeOptionalText(request.jenjang()));
         return jurusanRepository.save(jurusan);
     }
 
@@ -44,6 +49,7 @@ public class JurusanService {
 
         jurusan.setNamaJurusan(request.namaJurusan().trim());
         jurusan.setFakultas(normalizeOptionalText(request.fakultas()));
+        jurusan.setJenjang(normalizeOptionalText(request.jenjang()));
         return jurusanRepository.save(jurusan);
     }
 
