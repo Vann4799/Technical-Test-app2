@@ -114,10 +114,10 @@ Public Class MainForm
 
         Dim left = CardPanel()
         left.RowCount = 2
-        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 66))
+        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 76))
         left.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
 
-        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(14, 10, 14, 6), .BackColor = Surface}
+        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(14, 10, 14, 8), .BackColor = Surface}
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
@@ -166,7 +166,8 @@ Public Class MainForm
         left.Controls.Add(gridMahasiswa, 0, 1)
 
         Dim formPanel = FormStackPanel()
-        formPanel.Margin = New Padding(16, 0, 0, 0)
+        Dim formShell = CreateFormShell(formPanel, MahasiswaButtons())
+        formShell.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Mahasiswa"))
         txtNama = InputBox("Nama")
         txtUmur = InputBox("Umur")
@@ -188,11 +189,10 @@ Public Class MainForm
         formPanel.Controls.Add(LabeledControl("Jurusan", cmbMahasiswaJurusan))
         formPanel.Controls.Add(LabeledControl("Fakultas", txtMahasiswaFakultas))
         formPanel.Controls.Add(LabeledControl("Jenjang", txtMahasiswaJenjang))
-        formPanel.Controls.Add(MahasiswaButtons())
         ResizeFormStack(formPanel)
 
         layout.Controls.Add(left, 0, 0)
-        layout.Controls.Add(formPanel, 1, 0)
+        layout.Controls.Add(formShell, 1, 0)
         tab.Controls.Add(layout)
         Return tab
     End Function
@@ -205,10 +205,10 @@ Public Class MainForm
 
         Dim left = CardPanel()
         left.RowCount = 2
-        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 66))
+        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 76))
         left.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
 
-        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(14, 10, 14, 6), .BackColor = Surface}
+        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(14, 10, 14, 8), .BackColor = Surface}
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
@@ -255,7 +255,8 @@ Public Class MainForm
         left.Controls.Add(gridJurusan, 0, 1)
 
         Dim formPanel = FormStackPanel()
-        formPanel.Margin = New Padding(16, 0, 0, 0)
+        Dim formShell = CreateFormShell(formPanel, JurusanButtons())
+        formShell.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Jurusan"))
         txtNamaJurusan = InputBox("Nama Jurusan")
         txtFakultas = InputBox("Fakultas")
@@ -263,11 +264,10 @@ Public Class MainForm
         formPanel.Controls.Add(LabeledControl("Nama Jurusan", txtNamaJurusan))
         formPanel.Controls.Add(LabeledControl("Fakultas", txtFakultas))
         formPanel.Controls.Add(LabeledControl("Jenjang", txtJenjang))
-        formPanel.Controls.Add(JurusanButtons())
         ResizeFormStack(formPanel)
 
         layout.Controls.Add(left, 0, 0)
-        layout.Controls.Add(formPanel, 1, 0)
+        layout.Controls.Add(formShell, 1, 0)
         tab.Controls.Add(layout)
         Return tab
     End Function
@@ -585,7 +585,7 @@ Public Class MainForm
     End Function
 
     Private Shared Function InputBox(placeholder As String) As TextBox
-        Dim box = New TextBox With {.Dock = DockStyle.Fill, .PlaceholderText = placeholder, .Font = UiFont(10), .Multiline = True, .Height = 30, .ScrollBars = ScrollBars.None, .WordWrap = False}
+        Dim box = New TextBox With {.Dock = DockStyle.Fill, .PlaceholderText = placeholder, .Font = UiFont(10), .Multiline = True, .Height = 34, .ScrollBars = ScrollBars.None, .WordWrap = False}
         StyleTextBox(box)
         Return box
     End Function
@@ -606,7 +606,28 @@ Public Class MainForm
     End Function
 
     Private Shared Function ButtonPanel() As FlowLayoutPanel
-        Return New FlowLayoutPanel With {.Dock = DockStyle.Top, .AutoSize = True, .Padding = New Padding(0, 12, 0, 0), .BackColor = Surface}
+        Return New FlowLayoutPanel With {
+            .Dock = DockStyle.Fill,
+            .AutoSize = False,
+            .FlowDirection = FlowDirection.LeftToRight,
+            .WrapContents = False,
+            .Padding = New Padding(24, 12, 18, 8),
+            .BackColor = Surface
+        }
+    End Function
+
+    Private Shared Function CreateFormShell(body As FlowLayoutPanel, buttons As Control) As TableLayoutPanel
+        Dim shell = New TableLayoutPanel With {
+            .Dock = DockStyle.Fill,
+            .ColumnCount = 1,
+            .RowCount = 2,
+            .BackColor = Surface
+        }
+        shell.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
+        shell.RowStyles.Add(New RowStyle(SizeType.Absolute, 68))
+        shell.Controls.Add(body, 0, 0)
+        shell.Controls.Add(buttons, 0, 1)
+        Return shell
     End Function
 
     Private Shared Function FormStackPanel() As FlowLayoutPanel
@@ -615,7 +636,7 @@ Public Class MainForm
             .AutoScroll = True,
             .FlowDirection = FlowDirection.TopDown,
             .WrapContents = False,
-            .Padding = New Padding(24, 22, 18, 22),
+            .Padding = New Padding(24, 22, 18, 18),
             .BackColor = Surface
         }
         AddHandler panel.Resize, Sub(sender, e) ResizeFormStack(DirectCast(sender, FlowLayoutPanel))
@@ -623,7 +644,7 @@ Public Class MainForm
     End Function
 
     Private Shared Sub ResizeFormStack(panel As FlowLayoutPanel)
-        Dim availableWidth = Math.Max(260, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth)
+        Dim availableWidth = Math.Max(260, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth - 4)
         For Each child As Control In panel.Controls
             child.Width = availableWidth
         Next
@@ -677,9 +698,9 @@ Public Class MainForm
 
         Dim shell = New Panel With {
             .Dock = DockStyle.Top,
-            .Height = 46,
+            .Height = 54,
             .BackColor = Surface,
-            .Padding = New Padding(12, 0, 12, 0),
+            .Padding = New Padding(14, 0, 14, 0),
             .Margin = New Padding(0)
         }
         shell.Controls.Add(control)
@@ -695,7 +716,7 @@ Public Class MainForm
         Dim child = shell.Controls(0)
         child.Width = Math.Max(10, shell.ClientSize.Width - shell.Padding.Left - shell.Padding.Right)
         child.Left = shell.Padding.Left
-        child.Top = Math.Max(0, CInt((shell.ClientSize.Height - child.Height) / 2))
+        child.Top = Math.Max(0, CInt((shell.ClientSize.Height - child.Height) / 2) + 1)
     End Sub
 
     Private Shared Sub PaintInputShell(sender As Object, e As PaintEventArgs)
