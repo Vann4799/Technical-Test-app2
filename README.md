@@ -31,6 +31,16 @@ Swagger:
 http://localhost:8080/swagger-ui/index.html
 ```
 
+Untuk demo lokal tanpa PostgreSQL, backend bisa dijalankan di port `8081` dengan H2 in-memory:
+
+```powershell
+cd backend
+$env:DB_URL='jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE'
+$env:DB_USERNAME='sa'
+$env:DB_PASSWORD=''
+java -jar target\app-0.0.1-SNAPSHOT.jar --server.port=8081 --spring.datasource.driver-class-name=org.h2.Driver --spring.jpa.hibernate.ddl-auto=create-drop
+```
+
 Test backend:
 
 ```powershell
@@ -57,5 +67,18 @@ Jalankan frontend:
 Pastikan backend aktif sebelum menjalankan frontend. Base API default di aplikasi adalah:
 
 ```text
-http://localhost:8080
+http://localhost:8081
+```
+
+## Fitur
+
+- CRUD Jurusan dengan field Nama Jurusan dan Fakultas.
+- CRUD Mahasiswa dengan relasi ke Jurusan.
+- Search Jurusan dan Mahasiswa.
+- Validasi input di frontend dan backend.
+- Swagger/OpenAPI untuk dokumentasi REST API.
+- Export data Jurusan dan Mahasiswa ke Excel, PDF, CSV, dan JSON melalui endpoint backend:
+
+```text
+GET /api/export/{jurusan|mahasiswa}/{xlsx|pdf|csv|json}
 ```

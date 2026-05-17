@@ -68,6 +68,12 @@ Public Class ApiService
         Await EnsureSuccessAsync(response)
     End Function
 
+    Public Async Function DownloadExportAsync(resource As String, format As String) As Task(Of Byte())
+        Dim response = Await _client.GetAsync($"api/export/{Uri.EscapeDataString(resource)}/{Uri.EscapeDataString(format)}")
+        Await EnsureSuccessAsync(response)
+        Return Await response.Content.ReadAsByteArrayAsync()
+    End Function
+
     Private Shared Function ToJsonContent(value As Object) As StringContent
         Dim json = JsonSerializer.Serialize(value, JsonOptions)
         Return New StringContent(json, Encoding.UTF8, "application/json")

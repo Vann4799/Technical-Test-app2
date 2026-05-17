@@ -15,6 +15,7 @@ End Class
 Public Class JurusanModel
     Public Property Id As Long
     Public Property NamaJurusan As String = ""
+    Public Property Fakultas As String = ""
     Public Property CreatedAt As DateTime?
     Public Property UpdatedAt As DateTime?
 End Class
@@ -41,6 +42,7 @@ End Class
 
 Public Class JurusanRequest
     Public Property NamaJurusan As String = ""
+    Public Property Fakultas As String = ""
 End Class
 
 Public Class MahasiswaRequest

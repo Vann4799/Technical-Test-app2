@@ -54,13 +54,15 @@ class JurusanControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "namaJurusan": "Teknik Informatika"
+                                  "namaJurusan": "Teknik Informatika",
+                                  "fakultas": "Sains dan Teknologi"
                                 }
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id", notNullValue()))
-                .andExpect(jsonPath("$.data.namaJurusan").value("Teknik Informatika"));
+                .andExpect(jsonPath("$.data.namaJurusan").value("Teknik Informatika"))
+                .andExpect(jsonPath("$.data.fakultas").value("Sains dan Teknologi"));
 
         assertTrue(jurusanRepository.findAll().stream()
                 .anyMatch(jurusan -> jurusan.getNamaJurusan().equals("Teknik Informatika")));
@@ -105,13 +107,15 @@ class JurusanControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "namaJurusan": "Akuntansi"
+                                  "namaJurusan": "Akuntansi",
+                                  "fakultas": "Ekonomi dan Bisnis"
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(jurusan.getId()))
-                .andExpect(jsonPath("$.data.namaJurusan").value("Akuntansi"));
+                .andExpect(jsonPath("$.data.namaJurusan").value("Akuntansi"))
+                .andExpect(jsonPath("$.data.fakultas").value("Ekonomi dan Bisnis"));
     }
 
     @Test

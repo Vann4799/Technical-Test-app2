@@ -80,6 +80,7 @@ Prinsip utama:
 - Hapus jurusan.
 - Lihat daftar jurusan.
 - Search jurusan.
+- Data jurusan menyimpan nama jurusan dan fakultas.
 
 ### Modul Mahasiswa
 
@@ -98,6 +99,7 @@ Target nilai tambah:
 - Export PDF.
 - Export CSV.
 - Export JSON.
+- Export tersedia untuk data Mahasiswa dan Jurusan melalui REST API, lalu frontend hanya mengunduh file dari endpoint backend.
 
 Prioritas implementasi export dapat dilakukan setelah CRUD, search, dan validasi utama stabil.
 
@@ -109,6 +111,7 @@ Prioritas implementasi export dapat dilakukan setelah CRUD, search, dan validasi
 | --- | --- | --- |
 | `id` | SERIAL / BIGSERIAL | Primary Key |
 | `nama_jurusan` | VARCHAR(100) | Unique, Not Null |
+| `fakultas` | VARCHAR(100) |  |
 | `created_at` | TIMESTAMP |  |
 | `updated_at` | TIMESTAMP |  |
 
@@ -219,6 +222,7 @@ Jurusan (1) -------- (N) Mahasiswa
 ### Form atau Panel Jurusan
 
 - TextBox nama jurusan.
+- TextBox fakultas.
 - Tombol New / Reset, Save, Update, Delete.
 - Search jurusan.
 - DataGridView daftar jurusan.

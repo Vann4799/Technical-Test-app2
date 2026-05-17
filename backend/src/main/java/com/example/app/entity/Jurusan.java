@@ -22,6 +22,9 @@ public class Jurusan {
     @Column(name = "nama_jurusan", nullable = false, unique = true, length = 100)
     private String namaJurusan;
 
+    @Column(length = 100)
+    private String fakultas;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -38,6 +41,14 @@ public class Jurusan {
 
     public void setNamaJurusan(String namaJurusan) {
         this.namaJurusan = namaJurusan;
+    }
+
+    public String getFakultas() {
+        return fakultas;
+    }
+
+    public void setFakultas(String fakultas) {
+        this.fakultas = fakultas;
     }
 
     public LocalDateTime getCreatedAt() {

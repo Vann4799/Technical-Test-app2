@@ -33,6 +33,7 @@ public class JurusanService {
 
         Jurusan jurusan = new Jurusan();
         jurusan.setNamaJurusan(request.namaJurusan().trim());
+        jurusan.setFakultas(normalizeOptionalText(request.fakultas()));
         return jurusanRepository.save(jurusan);
     }
 
@@ -42,6 +43,7 @@ public class JurusanService {
         ensureNameAvailable(request.namaJurusan(), id);
 
         jurusan.setNamaJurusan(request.namaJurusan().trim());
+        jurusan.setFakultas(normalizeOptionalText(request.fakultas()));
         return jurusanRepository.save(jurusan);
     }
 
@@ -63,5 +65,12 @@ public class JurusanService {
         if (exists) {
             throw new BadRequestException(Map.of("namaJurusan", "Nama jurusan sudah digunakan"));
         }
+    }
+
+    private String normalizeOptionalText(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

@@ -4,6 +4,7 @@ dotnet-install.ps1
 **/bin/
 **/obj/
 *.user
+*.log
 
 .vs/
 .vscode/
