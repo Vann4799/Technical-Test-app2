@@ -7,7 +7,6 @@ Sistem Manajemen Data Mahasiswa dengan frontend VB.NET Windows Forms, backend Sp
 - `prd.md` - Product Requirements Document.
 - `backend/` - Spring Boot REST API.
 - `frontend/` - VB.NET Windows Forms desktop app.
-- `k8s/` - Manifest Kubernetes untuk deployment Minikube.
 
 ## Backend
 
@@ -49,38 +48,6 @@ cd backend
 .\mvnw.cmd test
 ```
 
-## Deployment Minikube
-
-Build JAR dan Docker image backend:
-
-```powershell
-cd backend
-.\mvnw.cmd package -DskipTests
-cd ..
-minikube image build -t student-management-api:latest backend
-```
-
-Deploy PostgreSQL dan backend ke Minikube:
-
-```powershell
-kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/postgres-secret.yaml
-kubectl apply -f k8s/postgres-deployment.yaml
-kubectl apply -f k8s/backend-deployment.yaml
-```
-
-Akses API dari host:
-
-```powershell
-minikube service student-api -n student-management --url
-```
-
-Swagger tersedia di:
-
-```text
-http://<minikube-service-url>/swagger-ui/index.html
-```
-
 ## Frontend
 
 Frontend hanya memanggil REST API dan tidak melakukan query database langsung.
@@ -111,7 +78,6 @@ http://localhost:8081
 - Search Jurusan dan Mahasiswa.
 - Validasi input di frontend dan backend.
 - Swagger/OpenAPI untuk dokumentasi REST API.
-- Deployment Minikube tersedia melalui `backend/Dockerfile` dan manifest `k8s/`.
 - Export data Jurusan dan Mahasiswa ke Excel, PDF, CSV, dan JSON melalui endpoint backend:
 
 ```text
