@@ -9,6 +9,8 @@ Public Class MainForm
     Private Shared ReadOnly SilverBackground As Color = Color.FromArgb(244, 246, 248)
     Private Shared ReadOnly Surface As Color = Color.FromArgb(255, 255, 255)
     Private Shared ReadOnly SurfaceMuted As Color = Color.FromArgb(250, 251, 252)
+    Private Shared ReadOnly ReadOnlySurface As Color = Color.FromArgb(246, 248, 250)
+    Private Shared ReadOnly ReadOnlyBorder As Color = Color.FromArgb(205, 213, 223)
     Private Shared ReadOnly BorderSoft As Color = Color.FromArgb(220, 225, 230)
     Private Shared ReadOnly TextStrong As Color = Color.FromArgb(30, 41, 59)
     Private Shared ReadOnly TextMuted As Color = Color.FromArgb(100, 116, 139)
@@ -178,9 +180,9 @@ Public Class MainForm
         txtAlamat = InputBox("Alamat")
         cmbMahasiswaJurusan = New ComboBox With {.Dock = DockStyle.Fill, .DropDownStyle = ComboBoxStyle.DropDownList, .Height = 34, .FlatStyle = FlatStyle.Flat, .Font = UiFont(10), .BackColor = Surface, .ForeColor = TextStrong}
         txtMahasiswaFakultas = InputBox("Fakultas")
-        txtMahasiswaFakultas.ReadOnly = True
+        StyleReadOnlyTextBox(txtMahasiswaFakultas)
         txtMahasiswaJenjang = InputBox("Jenjang")
-        txtMahasiswaJenjang.ReadOnly = True
+        StyleReadOnlyTextBox(txtMahasiswaJenjang)
         AddHandler cmbMahasiswaJurusan.SelectedIndexChanged, AddressOf MahasiswaJurusanChanged
 
         formPanel.Controls.Add(LabeledControl("Nama", txtNama))
@@ -707,10 +709,20 @@ Public Class MainForm
         box.Margin = New Padding(0)
     End Sub
 
+    Private Shared Sub StyleReadOnlyTextBox(box As TextBox)
+        box.ReadOnly = True
+        box.BackColor = ReadOnlySurface
+        box.ForeColor = TextMuted
+        box.Cursor = Cursors.Default
+        box.TabStop = False
+    End Sub
+
     Private Shared Function InputShell(control As Control) As Panel
         control.Dock = DockStyle.None
         control.Margin = New Padding(0)
-        control.BackColor = Surface
+        Dim readOnlyInput = IsReadOnlyInput(control)
+        Dim shellBack = If(readOnlyInput, ReadOnlySurface, Surface)
+        control.BackColor = shellBack
         If Not TypeOf control Is TextBox Then
             control.Font = UiFont(10)
             control.Height = 34
@@ -719,7 +731,7 @@ Public Class MainForm
         Dim shell = New Panel With {
             .Dock = DockStyle.Top,
             .Height = 54,
-            .BackColor = Surface,
+            .BackColor = shellBack,
             .Padding = New Padding(14, 0, 14, 0),
             .Margin = New Padding(0)
         }
@@ -741,11 +753,20 @@ Public Class MainForm
 
     Private Shared Sub PaintInputShell(sender As Object, e As PaintEventArgs)
         Dim panel = DirectCast(sender, Panel)
-        Using pen As New Pen(BorderSoft, 1)
+        Dim borderColor = If(panel.Controls.Count > 0 AndAlso IsReadOnlyInput(panel.Controls(0)), ReadOnlyBorder, BorderSoft)
+        Using pen As New Pen(borderColor, 1)
             Dim rect = New Rectangle(0, 0, panel.Width - 1, panel.Height - 1)
             e.Graphics.DrawRectangle(pen, rect)
         End Using
     End Sub
+
+    Private Shared Function IsReadOnlyInput(control As Control) As Boolean
+        If TypeOf control Is TextBox Then
+            Return DirectCast(control, TextBox).ReadOnly
+        End If
+
+        Return False
+    End Function
 
     Private Shared Function ActionButton(text As String, kind As ButtonKind) As Button
         Dim button = New Button With {.Text = text, .Width = 88, .Height = 36, .Margin = New Padding(0, 0, 10, 10), .FlatStyle = FlatStyle.Flat, .Cursor = Cursors.Hand}
