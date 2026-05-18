@@ -599,12 +599,15 @@ Public Class MainForm
         Dim baseUrl = txtApiUrl.Text.Trim()
         Dim parsedUri As Uri = Nothing
         Dim valid = Uri.TryCreate(baseUrl, UriKind.Absolute, parsedUri) AndAlso (parsedUri.Scheme = Uri.UriSchemeHttp OrElse parsedUri.Scheme = Uri.UriSchemeHttps)
+        If valid AndAlso IsLocalhostPort8080(parsedUri) Then
+            valid = False
+        End If
         If valid Then Return True
 
         ClearLoadedData()
         SetStatus("Base API belum valid.")
         If showMessage Then
-            MessageBox.Show("Base API wajib diisi dengan format seperti http://localhost:8081.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("Base API project lokal ini pakai http://localhost:8081. Jangan pakai localhost:8080 karena port itu bisa bentrok dengan service lain.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             txtApiUrl.Focus()
         End If
 
@@ -618,6 +621,10 @@ Public Class MainForm
         ResetMahasiswaForm()
         ResetJurusanForm()
     End Sub
+
+    Private Shared Function IsLocalhostPort8080(uri As Uri) As Boolean
+        Return uri.Port = 8080 AndAlso (String.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase) OrElse uri.Host = "127.0.0.1")
+    End Function
 
     Private Function Service() As ApiService
         Return New ApiService(txtApiUrl.Text.Trim())

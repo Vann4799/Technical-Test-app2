@@ -11,7 +11,7 @@ Sistem Manajemen Data Mahasiswa dengan frontend VB.NET Windows Forms, backend Sp
 
 ## Backend
 
-Default backend berjalan di port `8080` dan memakai PostgreSQL:
+Default backend berjalan di port `8081` dan memakai PostgreSQL:
 
 ```properties
 DB_URL=jdbc:postgresql://localhost:5432/mahasiswa_db
@@ -29,10 +29,10 @@ cd backend
 Swagger:
 
 ```text
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8081/swagger-ui/index.html
 ```
 
-Untuk demo lokal tanpa PostgreSQL, backend bisa dijalankan di port `8081` dengan H2 in-memory:
+Untuk demo lokal tanpa PostgreSQL, backend bisa tetap dijalankan di port `8081` dengan H2 in-memory:
 
 ```powershell
 cd backend

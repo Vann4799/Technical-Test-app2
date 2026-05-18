@@ -127,10 +127,17 @@ Public Class ApiService
         If Not Uri.TryCreate(normalized, UriKind.Absolute, parsedUri) OrElse (parsedUri.Scheme <> Uri.UriSchemeHttp AndAlso parsedUri.Scheme <> Uri.UriSchemeHttps) Then
             Throw New ApplicationException("Base API tidak valid. Gunakan format seperti http://localhost:8081")
         End If
+        If IsLocalhostPort8080(parsedUri) Then
+            Throw New ApplicationException("Untuk project lokal ini gunakan Base API http://localhost:8081. Port 8080 sedang rawan bentrok dengan service lain.")
+        End If
 
         If Not normalized.EndsWith("/") Then
             normalized &= "/"
         End If
         Return normalized
+    End Function
+
+    Private Shared Function IsLocalhostPort8080(uri As Uri) As Boolean
+        Return uri.Port = 8080 AndAlso (String.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase) OrElse uri.Host = "127.0.0.1")
     End Function
 End Class
