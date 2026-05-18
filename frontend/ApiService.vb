@@ -119,10 +119,15 @@ Public Class ApiService
 
     Private Shared Function NormalizeBaseUrl(baseUrl As String) As String
         If String.IsNullOrWhiteSpace(baseUrl) Then
-            Return "http://localhost:8080/"
+            Throw New ApplicationException("Base API wajib diisi, contoh: http://localhost:8081")
         End If
 
         Dim normalized = baseUrl.Trim()
+        Dim parsedUri As Uri = Nothing
+        If Not Uri.TryCreate(normalized, UriKind.Absolute, parsedUri) OrElse (parsedUri.Scheme <> Uri.UriSchemeHttp AndAlso parsedUri.Scheme <> Uri.UriSchemeHttps) Then
+            Throw New ApplicationException("Base API tidak valid. Gunakan format seperti http://localhost:8081")
+        End If
+
         If Not normalized.EndsWith("/") Then
             normalized &= "/"
         End If

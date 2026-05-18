@@ -84,6 +84,7 @@ Public Class MainForm
         Dim apiUrlShell = InputShell(txtApiUrl)
         apiUrlShell.Margin = New Padding(0, 12, 12, 12)
         headerLayout.Controls.Add(apiUrlShell, 2, 0)
+        AddHandler txtApiUrl.TextChanged, AddressOf BaseApiUrlChanged
 
         Dim btnReloadAll = ActionButton("Reload", ButtonKind.Primary)
         btnReloadAll.Dock = DockStyle.Fill
@@ -305,6 +306,8 @@ Public Class MainForm
     End Function
 
     Private Async Function LoadInitialDataAsync() As Task
+        If Not HasValidBaseApiUrl(True) Then Return
+
         Await RunSafelyAsync(Async Function()
                                  Await LoadJurusanAsync()
                                  Await LoadMahasiswaAsync()
@@ -312,6 +315,8 @@ Public Class MainForm
     End Function
 
     Private Async Function LoadJurusanAsync() As Task
+        If Not HasValidBaseApiUrl(True) Then Return
+
         Await RunSafelyAsync(Async Function()
                                  Dim data = Await Service().GetJurusanAsync(txtJurusanSearch.Text)
                                  gridJurusan.DataSource = New BindingList(Of JurusanModel)(data)
@@ -323,6 +328,8 @@ Public Class MainForm
     End Function
 
     Private Async Function LoadMahasiswaAsync() As Task
+        If Not HasValidBaseApiUrl(True) Then Return
+
         Await RunSafelyAsync(Async Function()
                                  Dim data = Await Service().GetMahasiswaAsync(txtMahasiswaSearch.Text)
                                  gridMahasiswa.DataSource = New BindingList(Of MahasiswaModel)(data)
@@ -581,8 +588,39 @@ Public Class MainForm
         End Try
     End Function
 
+    Private Sub BaseApiUrlChanged(sender As Object, e As EventArgs)
+        If String.IsNullOrWhiteSpace(txtApiUrl.Text) Then
+            ClearLoadedData()
+            SetStatus("Base API kosong. Isi URL API lalu klik Reload.")
+        End If
+    End Sub
+
+    Private Function HasValidBaseApiUrl(showMessage As Boolean) As Boolean
+        Dim baseUrl = txtApiUrl.Text.Trim()
+        Dim parsedUri As Uri = Nothing
+        Dim valid = Uri.TryCreate(baseUrl, UriKind.Absolute, parsedUri) AndAlso (parsedUri.Scheme = Uri.UriSchemeHttp OrElse parsedUri.Scheme = Uri.UriSchemeHttps)
+        If valid Then Return True
+
+        ClearLoadedData()
+        SetStatus("Base API belum valid.")
+        If showMessage Then
+            MessageBox.Show("Base API wajib diisi dengan format seperti http://localhost:8081.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            txtApiUrl.Focus()
+        End If
+
+        Return False
+    End Function
+
+    Private Sub ClearLoadedData()
+        gridMahasiswa.DataSource = New BindingList(Of MahasiswaModel)()
+        gridJurusan.DataSource = New BindingList(Of JurusanModel)()
+        cmbMahasiswaJurusan.DataSource = New BindingList(Of JurusanModel)()
+        ResetMahasiswaForm()
+        ResetJurusanForm()
+    End Sub
+
     Private Function Service() As ApiService
-        Return New ApiService(txtApiUrl.Text)
+        Return New ApiService(txtApiUrl.Text.Trim())
     End Function
 
     Private Sub SetStatus(message As String)
