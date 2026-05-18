@@ -26,6 +26,7 @@ Public Class MainForm
 
     Private txtMahasiswaSearch As TextBox
     Private gridMahasiswa As DataGridView
+    Private lblMahasiswaCount As Label
     Private txtNim As TextBox
     Private txtNama As TextBox
     Private txtUmur As TextBox
@@ -39,6 +40,7 @@ Public Class MainForm
 
     Private txtJurusanSearch As TextBox
     Private gridJurusan As DataGridView
+    Private lblJurusanCount As Label
     Private txtNamaJurusan As TextBox
     Private txtFakultas As TextBox
     Private txtJenjang As TextBox
@@ -53,8 +55,8 @@ Public Class MainForm
     Private Sub InitializeUi()
         Text = "Sistem Manajemen Data Mahasiswa"
         StartPosition = FormStartPosition.CenterScreen
-        MinimumSize = New Size(1100, 720)
-        Size = New Size(1220, 780)
+        MinimumSize = New Size(1180, 740)
+        Size = New Size(1320, 820)
         Font = UiFont(10)
         BackColor = SilverBackground
 
@@ -62,17 +64,17 @@ Public Class MainForm
             .Dock = DockStyle.Fill,
             .ColumnCount = 1,
             .RowCount = 3,
-            .Padding = New Padding(18),
+            .Padding = New Padding(20),
             .BackColor = SilverBackground
         }
-        root.RowStyles.Add(New RowStyle(SizeType.Absolute, 90))
+        root.RowStyles.Add(New RowStyle(SizeType.Absolute, 86))
         root.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
         root.RowStyles.Add(New RowStyle(SizeType.Absolute, 28))
 
-        Dim apiPanel = New Panel With {.Dock = DockStyle.Fill, .Padding = New Padding(22, 14, 16, 14), .BackColor = Surface}
+        Dim apiPanel = New Panel With {.Dock = DockStyle.Fill, .Padding = New Padding(24, 14, 16, 14), .BackColor = Surface}
         Dim headerLayout = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .BackColor = Surface}
-        headerLayout.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 340))
-        headerLayout.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 88))
+        headerLayout.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 320))
+        headerLayout.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 92))
         headerLayout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
         headerLayout.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 126))
 
@@ -93,7 +95,7 @@ Public Class MainForm
         headerLayout.Controls.Add(btnReloadAll, 3, 0)
         apiPanel.Controls.Add(headerLayout)
 
-        Dim tabs = New TabControl With {.Dock = DockStyle.Fill, .Appearance = TabAppearance.Normal, .Padding = New Point(18, 8)}
+        Dim tabs = New TabControl With {.Dock = DockStyle.Fill, .Appearance = TabAppearance.Normal, .Padding = New Point(22, 10)}
         tabs.Font = UiFont(10, FontStyle.Bold)
         tabs.Multiline = False
         tabs.TabPages.Add(BuildMahasiswaTab())
@@ -113,16 +115,19 @@ Public Class MainForm
 
     Private Function BuildMahasiswaTab() As TabPage
         Dim tab = New TabPage("Mahasiswa") With {.BackColor = SilverBackground}
-        Dim layout = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 2, .Padding = New Padding(14), .BackColor = SilverBackground}
-        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 66))
-        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 34))
+        Dim layout = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 2, .Padding = New Padding(14, 16, 14, 14), .BackColor = SilverBackground}
+        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 68))
+        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 32))
 
         Dim left = CardPanel()
-        left.RowCount = 2
-        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 76))
+        left.RowCount = 3
+        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 58))
+        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 72))
         left.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
+        lblMahasiswaCount = CountBadge("0 data")
+        left.Controls.Add(SectionHeader("Data Mahasiswa", lblMahasiswaCount), 0, 0)
 
-        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(14, 10, 14, 8), .BackColor = Surface}
+        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(16, 8, 16, 8), .BackColor = Surface}
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
@@ -130,16 +135,16 @@ Public Class MainForm
         txtMahasiswaSearch = New TextBox With {.Dock = DockStyle.Fill, .PlaceholderText = "Search nama atau NIM"}
         StyleTextBox(txtMahasiswaSearch)
         Dim mahasiswaSearchShell = InputShell(txtMahasiswaSearch)
-        mahasiswaSearchShell.Margin = New Padding(0, 6, 10, 6)
+        mahasiswaSearchShell.Margin = New Padding(0, 4, 10, 4)
         Dim btnSearch = ActionButton("Search", ButtonKind.Primary)
         btnSearch.Dock = DockStyle.Fill
-        btnSearch.Margin = New Padding(0, 6, 10, 6)
+        btnSearch.Margin = New Padding(0, 4, 10, 4)
         Dim btnRefresh = ActionButton("Refresh", ButtonKind.Neutral)
         btnRefresh.Dock = DockStyle.Fill
-        btnRefresh.Margin = New Padding(0, 6, 10, 6)
+        btnRefresh.Margin = New Padding(0, 4, 10, 4)
         Dim btnExport = ActionButton("Export", ButtonKind.Neutral)
         btnExport.Dock = DockStyle.Fill
-        btnExport.Margin = New Padding(0, 6, 0, 6)
+        btnExport.Margin = New Padding(0, 4, 0, 4)
         AttachExportMenu(btnExport, "mahasiswa")
         AddHandler btnSearch.Click, Async Sub(sender, e) Await LoadMahasiswaAsync()
         AddHandler btnRefresh.Click, Async Sub(sender, e)
@@ -167,12 +172,10 @@ Public Class MainForm
         StyleGrid(gridMahasiswa)
         AddHandler gridMahasiswa.SelectionChanged, AddressOf MahasiswaSelectionChanged
 
-        left.Controls.Add(searchPanel, 0, 0)
-        left.Controls.Add(gridMahasiswa, 0, 1)
+        left.Controls.Add(searchPanel, 0, 1)
+        left.Controls.Add(gridMahasiswa, 0, 2)
 
         Dim formPanel = FormStackPanel()
-        Dim formShell = CreateFormShell(formPanel, MahasiswaButtons())
-        formShell.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Mahasiswa"))
         txtNama = InputBox("Nama")
         txtUmur = InputBox("Umur")
@@ -194,7 +197,10 @@ Public Class MainForm
         formPanel.Controls.Add(LabeledControl("Jurusan", cmbMahasiswaJurusan))
         formPanel.Controls.Add(LabeledControl("Fakultas", txtMahasiswaFakultas))
         formPanel.Controls.Add(LabeledControl("Jenjang", txtMahasiswaJenjang))
+        formPanel.Controls.Add(MahasiswaButtons())
         ResizeFormStack(formPanel)
+        Dim formShell = CreateFormShell(formPanel)
+        formShell.Margin = New Padding(18, 0, 0, 0)
 
         layout.Controls.Add(left, 0, 0)
         layout.Controls.Add(formShell, 1, 0)
@@ -204,16 +210,19 @@ Public Class MainForm
 
     Private Function BuildJurusanTab() As TabPage
         Dim tab = New TabPage("Jurusan") With {.BackColor = SilverBackground}
-        Dim layout = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 2, .Padding = New Padding(14), .BackColor = SilverBackground}
-        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 66))
-        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 34))
+        Dim layout = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 2, .Padding = New Padding(14, 16, 14, 14), .BackColor = SilverBackground}
+        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 68))
+        layout.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 32))
 
         Dim left = CardPanel()
-        left.RowCount = 2
-        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 76))
+        left.RowCount = 3
+        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 58))
+        left.RowStyles.Add(New RowStyle(SizeType.Absolute, 72))
         left.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
+        lblJurusanCount = CountBadge("0 data")
+        left.Controls.Add(SectionHeader("Data Jurusan", lblJurusanCount), 0, 0)
 
-        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(14, 10, 14, 8), .BackColor = Surface}
+        Dim searchPanel = New TableLayoutPanel With {.Dock = DockStyle.Fill, .ColumnCount = 4, .Padding = New Padding(16, 8, 16, 8), .BackColor = Surface}
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
         searchPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 112))
@@ -221,16 +230,16 @@ Public Class MainForm
         txtJurusanSearch = New TextBox With {.Dock = DockStyle.Fill, .PlaceholderText = "Search jurusan"}
         StyleTextBox(txtJurusanSearch)
         Dim jurusanSearchShell = InputShell(txtJurusanSearch)
-        jurusanSearchShell.Margin = New Padding(0, 6, 10, 6)
+        jurusanSearchShell.Margin = New Padding(0, 4, 10, 4)
         Dim btnSearch = ActionButton("Search", ButtonKind.Primary)
         btnSearch.Dock = DockStyle.Fill
-        btnSearch.Margin = New Padding(0, 6, 10, 6)
+        btnSearch.Margin = New Padding(0, 4, 10, 4)
         Dim btnRefresh = ActionButton("Refresh", ButtonKind.Neutral)
         btnRefresh.Dock = DockStyle.Fill
-        btnRefresh.Margin = New Padding(0, 6, 10, 6)
+        btnRefresh.Margin = New Padding(0, 4, 10, 4)
         Dim btnExport = ActionButton("Export", ButtonKind.Neutral)
         btnExport.Dock = DockStyle.Fill
-        btnExport.Margin = New Padding(0, 6, 0, 6)
+        btnExport.Margin = New Padding(0, 4, 0, 4)
         AttachExportMenu(btnExport, "jurusan")
         AddHandler btnSearch.Click, Async Sub(sender, e) Await LoadJurusanAsync()
         AddHandler btnRefresh.Click, Async Sub(sender, e)
@@ -256,12 +265,10 @@ Public Class MainForm
         StyleGrid(gridJurusan)
         AddHandler gridJurusan.SelectionChanged, AddressOf JurusanSelectionChanged
 
-        left.Controls.Add(searchPanel, 0, 0)
-        left.Controls.Add(gridJurusan, 0, 1)
+        left.Controls.Add(searchPanel, 0, 1)
+        left.Controls.Add(gridJurusan, 0, 2)
 
         Dim formPanel = FormStackPanel()
-        Dim formShell = CreateFormShell(formPanel, JurusanButtons())
-        formShell.Margin = New Padding(16, 0, 0, 0)
         formPanel.Controls.Add(HeaderLabel("Form Jurusan"))
         txtNamaJurusan = InputBox("Nama Jurusan")
         txtFakultas = InputBox("Fakultas")
@@ -269,7 +276,10 @@ Public Class MainForm
         formPanel.Controls.Add(LabeledControl("Nama Jurusan", txtNamaJurusan))
         formPanel.Controls.Add(LabeledControl("Fakultas", txtFakultas))
         formPanel.Controls.Add(LabeledControl("Jenjang", txtJenjang))
+        formPanel.Controls.Add(JurusanButtons())
         ResizeFormStack(formPanel)
+        Dim formShell = CreateFormShell(formPanel)
+        formShell.Margin = New Padding(18, 0, 0, 0)
 
         layout.Controls.Add(left, 0, 0)
         layout.Controls.Add(formShell, 1, 0)
@@ -320,6 +330,7 @@ Public Class MainForm
         Await RunSafelyAsync(Async Function()
                                  Dim data = Await Service().GetJurusanAsync(txtJurusanSearch.Text)
                                  gridJurusan.DataSource = New BindingList(Of JurusanModel)(data)
+                                 lblJurusanCount.Text = $"{data.Count} data"
                                  cmbMahasiswaJurusan.DisplayMember = "NamaJurusan"
                                  cmbMahasiswaJurusan.ValueMember = "Id"
                                  cmbMahasiswaJurusan.DataSource = New BindingList(Of JurusanModel)(data.ToList())
@@ -333,6 +344,7 @@ Public Class MainForm
         Await RunSafelyAsync(Async Function()
                                  Dim data = Await Service().GetMahasiswaAsync(txtMahasiswaSearch.Text)
                                  gridMahasiswa.DataSource = New BindingList(Of MahasiswaModel)(data)
+                                 lblMahasiswaCount.Text = $"{data.Count} data"
                                  SetStatus($"Loaded {data.Count} mahasiswa.")
                              End Function)
     End Function
@@ -618,6 +630,8 @@ Public Class MainForm
         gridMahasiswa.DataSource = New BindingList(Of MahasiswaModel)()
         gridJurusan.DataSource = New BindingList(Of JurusanModel)()
         cmbMahasiswaJurusan.DataSource = New BindingList(Of JurusanModel)()
+        If lblMahasiswaCount IsNot Nothing Then lblMahasiswaCount.Text = "0 data"
+        If lblJurusanCount IsNot Nothing Then lblJurusanCount.Text = "0 data"
         ResetMahasiswaForm()
         ResetJurusanForm()
     End Sub
@@ -655,12 +669,12 @@ Public Class MainForm
     End Function
 
     Private Shared Function HeaderLabel(text As String) As Label
-        Return New Label With {.Text = text, .Height = 44, .Font = UiFont(16, FontStyle.Bold), .ForeColor = TextStrong, .TextAlign = ContentAlignment.MiddleLeft, .Margin = New Padding(0, 0, 0, 8)}
+        Return New Label With {.Text = text, .Height = 40, .Font = UiFont(16, FontStyle.Bold), .ForeColor = TextStrong, .TextAlign = ContentAlignment.MiddleLeft, .Margin = New Padding(0, 0, 0, 14)}
     End Function
 
     Private Shared Function LabeledControl(labelText As String, control As Control) As Control
-        Dim panel = New Panel With {.Height = 84, .BackColor = Surface, .Margin = New Padding(0, 0, 0, 10)}
-        Dim label = New Label With {.Text = labelText, .Dock = DockStyle.Top, .Height = 24, .ForeColor = TextMuted, .Font = UiFont(9.5F, FontStyle.Bold), .TextAlign = ContentAlignment.MiddleLeft}
+        Dim panel = New Panel With {.Height = 78, .BackColor = Surface, .Margin = New Padding(0, 0, 0, 10)}
+        Dim label = New Label With {.Text = labelText, .Dock = DockStyle.Top, .Height = 22, .ForeColor = TextMuted, .Font = UiFont(9.25F, FontStyle.Bold), .TextAlign = ContentAlignment.MiddleLeft}
         Dim shell = InputShell(control)
         shell.Dock = DockStyle.Top
         panel.Controls.Add(shell)
@@ -668,28 +682,51 @@ Public Class MainForm
         Return panel
     End Function
 
-    Private Shared Function ButtonPanel() As FlowLayoutPanel
-        Return New FlowLayoutPanel With {
+    Private Shared Function SectionHeader(title As String, countLabel As Label) As Control
+        Dim panel = New TableLayoutPanel With {
             .Dock = DockStyle.Fill,
-            .AutoSize = False,
-            .FlowDirection = FlowDirection.LeftToRight,
-            .WrapContents = False,
-            .Padding = New Padding(24, 12, 18, 8),
+            .ColumnCount = 2,
+            .Padding = New Padding(16, 12, 16, 4),
             .BackColor = Surface
+        }
+        panel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100))
+        panel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 104))
+        panel.Controls.Add(New Label With {.Text = title, .Dock = DockStyle.Fill, .Font = UiFont(12.5F, FontStyle.Bold), .ForeColor = TextStrong, .TextAlign = ContentAlignment.MiddleLeft, .Margin = New Padding(0)}, 0, 0)
+        panel.Controls.Add(countLabel, 1, 0)
+        Return panel
+    End Function
+
+    Private Shared Function CountBadge(text As String) As Label
+        Return New Label With {
+            .Text = text,
+            .Dock = DockStyle.Fill,
+            .Font = UiFont(9.25F, FontStyle.Bold),
+            .ForeColor = TextMuted,
+            .TextAlign = ContentAlignment.MiddleRight,
+            .Margin = New Padding(0)
         }
     End Function
 
-    Private Shared Function CreateFormShell(body As FlowLayoutPanel, buttons As Control) As TableLayoutPanel
-        Dim shell = New TableLayoutPanel With {
-            .Dock = DockStyle.Fill,
-            .ColumnCount = 1,
-            .RowCount = 2,
-            .BackColor = Surface
+    Private Shared Function ButtonPanel() As FlowLayoutPanel
+        Return New FlowLayoutPanel With {
+            .Dock = DockStyle.None,
+            .Height = 52,
+            .AutoSize = False,
+            .FlowDirection = FlowDirection.LeftToRight,
+            .WrapContents = False,
+            .Padding = New Padding(0, 6, 0, 4),
+            .BackColor = Surface,
+            .Margin = New Padding(0, 8, 0, 0)
         }
-        shell.RowStyles.Add(New RowStyle(SizeType.Percent, 100))
-        shell.RowStyles.Add(New RowStyle(SizeType.Absolute, 68))
-        shell.Controls.Add(body, 0, 0)
-        shell.Controls.Add(buttons, 0, 1)
+    End Function
+
+    Private Shared Function CreateFormShell(body As FlowLayoutPanel) As Panel
+        Dim shell = New Panel With {
+            .Dock = DockStyle.Fill,
+            .BackColor = Surface,
+            .Padding = New Padding(0)
+        }
+        shell.Controls.Add(body)
         Return shell
     End Function
 
@@ -699,7 +736,7 @@ Public Class MainForm
             .AutoScroll = True,
             .FlowDirection = FlowDirection.TopDown,
             .WrapContents = False,
-            .Padding = New Padding(24, 22, 24, 18),
+            .Padding = New Padding(26, 26, 26, 22),
             .BackColor = Surface
         }
         AddHandler panel.Resize, Sub(sender, e) ResizeFormStack(DirectCast(sender, FlowLayoutPanel))
@@ -707,7 +744,7 @@ Public Class MainForm
     End Function
 
     Private Shared Sub ResizeFormStack(panel As FlowLayoutPanel)
-        Dim availableWidth = Math.Max(300, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth - 6)
+        Dim availableWidth = Math.Max(300, panel.ClientSize.Width - panel.Padding.Left - panel.Padding.Right - SystemInformation.VerticalScrollBarWidth - 8)
         For Each child As Control In panel.Controls
             child.Width = availableWidth
         Next
@@ -729,21 +766,22 @@ Public Class MainForm
         grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal
         grid.GridColor = BorderSoft
         grid.RowHeadersVisible = False
+        grid.AllowUserToResizeRows = False
         grid.EnableHeadersVisualStyles = False
         grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None
-        grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(241, 244, 247)
+        grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(238, 242, 246)
         grid.ColumnHeadersDefaultCellStyle.ForeColor = TextStrong
         grid.ColumnHeadersDefaultCellStyle.Font = UiFont(9.5F, FontStyle.Bold)
         grid.DefaultCellStyle.Font = UiFont(9.5F)
         grid.ColumnHeadersDefaultCellStyle.Padding = New Padding(8, 0, 8, 0)
-        grid.ColumnHeadersHeight = 40
+        grid.ColumnHeadersHeight = 42
         grid.DefaultCellStyle.BackColor = Surface
         grid.DefaultCellStyle.ForeColor = TextStrong
-        grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(219, 230, 242)
+        grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(215, 227, 240)
         grid.DefaultCellStyle.SelectionForeColor = TextStrong
         grid.DefaultCellStyle.Padding = New Padding(8, 0, 8, 0)
         grid.AlternatingRowsDefaultCellStyle.BackColor = SurfaceMuted
-        grid.RowTemplate.Height = 38
+        grid.RowTemplate.Height = 40
     End Sub
 
     Private Shared Sub StyleTextBox(box As TextBox)
@@ -775,7 +813,7 @@ Public Class MainForm
 
         Dim shell = New Panel With {
             .Dock = DockStyle.Top,
-            .Height = 54,
+            .Height = 48,
             .BackColor = shellBack,
             .Padding = New Padding(14, 0, 14, 0),
             .Margin = New Padding(0)
